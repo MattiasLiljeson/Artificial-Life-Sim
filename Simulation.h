@@ -60,8 +60,8 @@ private:
 	Vec createRandVec(int minx, int maxx, int miny, int maxy);
 	Vec getFreeSpotNear(int type, Vec pos, int radius);
 
-	Vec fixOutOfBounds(Vec pos);
-	Vec fixOutOfBounds(int x, int y);
+	void fixOutOfBounds( Vec& pos );
+	void fixOutOfBounds( int& x, int& y );
 
 	Bio scanSpot(int type, Vec pos);
 	Bio scanSpot(int type, int x, int y);
