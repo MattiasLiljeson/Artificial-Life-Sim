@@ -371,7 +371,7 @@ Vec Simulation::getNearestBio(int x, int y, int scanFor, int sightRange)
 						if(dist < sightRange)
 						{
 							// Create vec which is in bounds
-							Vec pos( i, j );
+							pos = Vec( i, j );
 							fixOutOfBounds( pos );
 						}
 					}
