@@ -345,12 +345,14 @@ Vec Simulation::getNewDir(int type, int x, int y)
 
 Vec Simulation::getNearestBio(int x, int y, int scanFor, int sightRange)
 {
-	Vec pos(-1, -1);
 	int minDist = INT_MAX;
 	int xStart = x-sightRange;
 	int yStart = y-sightRange;
 	int xStop = x+sightRange + 1; // +1 for the row you're at
 	int yStop = y+sightRange + 1; // +1 for the row you're at
+	Vec pos( -1, -1 );
+	Vec tmp( -1, -1 );
+	Vec org( x, y );
 
 	// Iterate through all objects of given type in sightrange, save the nearest
 	for(int i=xStart; i<xStop; i++)
@@ -364,7 +366,9 @@ Vec Simulation::getNearestBio(int x, int y, int scanFor, int sightRange)
 				if(bio.alive == true)
 				{
 					// Use i and j which can be out of bounds to get the correct distance
-					int dist = Vec(x,y).distance(Vec(i,j));
+					tmp.x = i;
+					tmp.y = j;
+					int dist = org.distance(tmp);
 					if(dist < minDist)
 					{
 						minDist = dist;
@@ -469,7 +473,9 @@ Vec Simulation::getFreeSpotNear(int type, Vec pos, int range)
 	int yStart = pos.y - range;
 	int xStop  = pos.x + range + 1; // +1 for the row you're at
 	int yStop  = pos.y + range + 1; // --"--
-	Vec tmp(-1, -1);
+	
+	int tmpX;
+	int tmpY;
 
 	Vec* freeSpots = new Vec[(range*2+1)*(range*2+1)]; // +1 for the row you're at
 	int numPos = 0;
@@ -478,12 +484,12 @@ Vec Simulation::getFreeSpotNear(int type, Vec pos, int range)
 	{
 		for(int y=yStart; y<yStop; y++)
 		{
-			tmp.x = x;
-			tmp.y = y;
-			fixOutOfBounds( tmp );
-			if(bios[type][tmp.x][tmp.y].alive == false)
+			tmpX = x;
+			tmpY = y;
+			fixOutOfBounds( tmpX, tmpY );
+			if(bios[type][tmpX][tmpY].alive == false)
 			{
-				freeSpots[numPos] = tmp;
+				freeSpots[numPos] = Vec( tmpX, tmpY );
 				numPos++;
 			}
 		}
@@ -512,19 +518,29 @@ void Simulation::fixOutOfBounds( Vec& pos )
 
 void Simulation::fixOutOfBounds( int& x, int& y )
 {
-	x = (x + mapSize) % mapSize;
-	y = (y + mapSize) % mapSize;
+	//x = (x + mapSize) % mapSize;
+	//y = (y + mapSize) % mapSize;
+
+	//HACK: faster than modulus if using literals
+	if( x > 127 )
+		x -= 127;
+	else if( x < 0)
+		x = 127;
+
+	if( y > 127 )
+		y -= 127;
+	else if( y < 0)
+		y = 127;
 }
 
-Bio Simulation::scanSpot(int type, int x, int y)
+Bio Simulation::scanSpot( int& type, int x, int y )
 {
-	return scanSpot(type, Vec(x,y));
+	fixOutOfBounds( x, y );
+	return bios[type][x][y];
 }
 
-Bio Simulation::scanSpot(int type, Vec pos)
+Bio Simulation::scanSpot( int& type, Vec pos )
 {
-	Vec inBoundsPos = pos;
-	fixOutOfBounds(inBoundsPos);
-	Bio bio = bios[type][inBoundsPos.x][inBoundsPos.y];
-	return bio;
+	fixOutOfBounds( pos );
+	return bios[type][pos.x][pos.y];
 }

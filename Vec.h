@@ -13,7 +13,7 @@ public:
 	Vec(){x = 11; y = 11;}
 	Vec(int x, int y){this->x = x; this->y = y;}
 
-	int distance(Vec other)
+	int distance( const Vec& other )
 	{
 		int distx = x - other.x;
 		int disty = y - other.y;
@@ -49,7 +49,7 @@ public:
 		y *= -1;
 	}
 
-	bool operator==(Vec rhs)
+	bool operator==(Vec& rhs)
 	{
 		if(rhs.x == x && rhs.y == y)
 			return true;

@@ -63,8 +63,8 @@ private:
 	void fixOutOfBounds( Vec& pos );
 	void fixOutOfBounds( int& x, int& y );
 
-	Bio scanSpot(int type, Vec pos);
-	Bio scanSpot(int type, int x, int y);
+	Bio scanSpot( int& type, Vec pos );
+	Bio scanSpot( int& type, int x, int y );
 
 public:
 	Simulation(int mapSize);
